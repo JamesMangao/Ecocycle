@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import withAuth from '../components/withAuth';
-import BackButton from '../components/BackButton';
+import { BackButton } from '../components/BackButton';
 
 function UsersPage() {
   const [users, setUsers] = useState([]);
