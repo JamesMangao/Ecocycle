@@ -1,17 +1,24 @@
 "use client";
 
 import { useState } from 'react';
-import { auth } from '../../firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
 export default function LoginPage() {
+  const [auth, setAuth] = useState(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+
+  // Lazy load Firebase
+  useState(() => {
+    import('../../firebase').then(({ auth: fbAuth }) => {
+      setAuth(fbAuth);
+    });
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

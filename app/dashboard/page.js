@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth } from '../../firebase';
 import withAuth from '../components/withAuth';
 import WelcomePopup from '../components/WelcomePopup';
 import axios from 'axios';
@@ -10,6 +9,7 @@ import { FaUsers, FaExchangeAlt, FaTrash, FaGift, FaQrcode } from 'react-icons/f
 export const dynamic = 'force-dynamic';
 
 const DashboardPage = () => {
+    const [auth, setAuth] = useState(null);
     const [stats, setStats] = useState({
         totalUsers: 0,
         totalTransactions: 0,
@@ -20,7 +20,14 @@ const DashboardPage = () => {
     const [error, setError] = useState(null);
     const [showWelcome, setShowWelcome] = useState(false);
     const router = useRouter();
-    const user = auth.currentUser;
+    const user = auth?.currentUser;
+
+    // Lazy load Firebase
+    useEffect(() => {
+        import('../../firebase').then(({ auth: fbAuth }) => {
+            setAuth(fbAuth);
+        });
+    }, []);
 
      useEffect(() => {
         const fetchStats = async () => {
@@ -66,7 +73,7 @@ const DashboardPage = () => {
             <header className="bg-white shadow-md p-4 flex justify-between items-center">
                 <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
                 <button
-                    onClick={() => auth.signOut().then(() => router.push('/login'))}
+                    onClick={() => auth?.signOut().then(() => router.push('/login'))}
                     className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
                 >
                     Logout
