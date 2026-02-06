@@ -2,7 +2,7 @@
 import { useState } from "react";
 import withAuth from "../../components/withAuth";
 import Link from "next/link";
-import BackButton from "../../components/BackButton";
+import { BackButton } from '../../components/BackButton';
 
 function RegisterBin() {
   const [name, setName] = useState("");
