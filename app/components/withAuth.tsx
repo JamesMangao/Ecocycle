@@ -11,26 +11,25 @@ const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
       let unsubscribe: (() => void) | null = null;
 
       // Lazy load Firebase and set up auth listener
-      import('../../firebase').then(async ({ default: firebaseModule }) => {
+      (async () => {
         try {
           const { onAuthStateChanged } = await import('firebase/auth');
           const { auth } = await import('../../firebase');
           
-          unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (!user) {
-              router.push('/login');
-            }
-          });
+          if (auth) {
+            unsubscribe = onAuthStateChanged(auth, (user) => {
+              if (!user) {
+                router.push('/login');
+              }
+            });
+          }
           
           setIsLoaded(true);
         } catch (error) {
           console.error('Failed to set up auth:', error);
           setIsLoaded(true);
         }
-      }).catch((error) => {
-        console.error('Failed to load Firebase:', error);
-        setIsLoaded(true);
-      });
+      })();
 
       return () => {
         if (unsubscribe) {

@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import type { Auth } from 'firebase/auth';
 
 export const dynamic = 'force-dynamic';
 
 export default function LoginPage() {
-  const [auth, setAuth] = useState(null);
+  const [auth, setAuth] = useState<Auth | null>(null);
   const [authLoaded, setAuthLoaded] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -17,7 +18,7 @@ export default function LoginPage() {
   // Lazy load Firebase
   useEffect(() => {
     import('../../firebase').then(({ auth: fbAuth }) => {
-      setAuth(fbAuth);
+      setAuth(fbAuth || null);
       setAuthLoaded(true);
     }).catch((err) => {
       console.error('Failed to load Firebase:', err);
