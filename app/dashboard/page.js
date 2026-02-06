@@ -1,8 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getAuth } from 'firebase/auth';
-import { app } from '../../firebase';
+import { auth } from '../../firebase';
 import withAuth from '../components/withAuth';
 import WelcomePopup from '../components/WelcomePopup';
 import axios from 'axios';
@@ -19,7 +18,6 @@ const DashboardPage = () => {
     const [error, setError] = useState(null);
     const [showWelcome, setShowWelcome] = useState(false);
     const router = useRouter();
-    const auth = getAuth(app);
     const user = auth.currentUser;
 
      useEffect(() => {
