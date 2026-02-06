@@ -17,12 +17,16 @@ function BinsPage() {
           throw new Error("Failed to fetch bins");
         }
         const data = await response.json();
-        setBins(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+  setBins(data);
+} catch (err) {
+  if (err instanceof Error) {
+    setError(err.message);
+  } else {
+    setError("An unknown error occurred");
+  }
+} finally {
+  setLoading(false);
+}
     };
 
     fetchBins();
