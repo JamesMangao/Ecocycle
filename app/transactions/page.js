@@ -1,7 +1,9 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import withAuth from '../components/withAuth';
-import BackButton from '../components/BackButton';
+import { BackButton } from '../components/BackButton';
+
+export const dynamic = 'force-dynamic';
 
 const backendURL = process.env.NEXT_PUBLIC_BACKEND_URL;
 const TransactionsPage = () => {

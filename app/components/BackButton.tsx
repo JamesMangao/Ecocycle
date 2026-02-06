@@ -1,18 +1,37 @@
+// app/components/BackButton.tsx
 "use client";
-import React from 'react';
-import { useRouter } from 'next/navigation';
 
-const BackButton = () => {
-  const router = useRouter();
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-  return (
-    <button
-      onClick={() => router.back()}
-      className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors"
-    >
-      Back
-    </button>
-  );
+type BackButtonProps = {
+  href?: string;         // optional: go to a specific route
+  label?: string;        // optional: custom label
 };
 
-export default BackButton;
+export function BackButton({ href, label = "Back" }: BackButtonProps) {
+  const router = useRouter();
+
+  // If an href is provided, render a Next.js Link
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className="px-3 py-1 rounded border border-gray-300 text-sm text-gray-700 hover:bg-gray-100"
+      >
+        {label}
+      </Link>
+    );
+  }
+
+  // Otherwise, behave like browser back
+  return (
+    <button
+      type="button"
+      onClick={() => router.back()}
+      className="px-3 py-1 rounded border border-gray-300 text-sm text-gray-700 hover:bg-gray-100"
+    >
+      {label}
+    </button>
+  );
+}

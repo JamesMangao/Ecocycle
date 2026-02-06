@@ -1,8 +1,10 @@
 "use client";
 import React from 'react';
 import withAuth from '../../components/withAuth';
-import BackButton from '../../components/BackButton';
+import { BackButton } from '../../components/BackButton';
 import { usePathname } from 'next/navigation';
+
+export const dynamic = 'force-dynamic';
 
 interface Detection {
   id: string;

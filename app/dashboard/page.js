@@ -7,6 +7,8 @@ import WelcomePopup from '../components/WelcomePopup';
 import axios from 'axios';
 import { FaUsers, FaExchangeAlt, FaTrash, FaGift, FaQrcode } from 'react-icons/fa';
 
+export const dynamic = 'force-dynamic';
+
 const DashboardPage = () => {
     const [stats, setStats] = useState({
         totalUsers: 0,

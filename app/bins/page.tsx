@@ -1,25 +1,39 @@
+// app/bins/page.tsx
 "use client";
-import { useEffect, useState } from "react";
-import Link from "next/link";
+
+import React, { useEffect, useState } from "react";
 import withAuth from "../components/withAuth";
-import BackButton from "../components/BackButton";
+import { BackButton } from "../components/BackButton";
+
+export const dynamic = 'force-dynamic';
+
+interface Bin {
+  id: string;
+  name: string;
+  location: string;
+  status: string;
+}
 
 function BinsPage() {
-  const [bins, setBins] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [bins, setBins] = useState<Bin[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null); // <-- important
 
   useEffect(() => {
     const fetchBins = async () => {
       try {
-        const response = await fetch("/api/admin/bins");
-        if (!response.ok) {
+        const res = await fetch("/api/bins");
+        if (!res.ok) {
           throw new Error("Failed to fetch bins");
         }
-        const data = await response.json();
+        const data: Bin[] = await res.json();
         setBins(data);
       } catch (err) {
-        setError(err.message);
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unknown error occurred");
+        }
       } finally {
         setLoading(false);
       }
@@ -29,62 +43,77 @@ function BinsPage() {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="p-6">
+        <p>Loading bins...</p>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-gray-800">Bins</h1>
+          <BackButton href="/dashboard" />
+        </div>
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-3 items-center mb-6">
-        <div>{/* Left empty space */}</div>
-        <h1 className="text-3xl font-bold text-center col-span-1">
-          Registered Bins
-        </h1>
-        <div className="flex items-center space-x-4 justify-end">
-          <Link
-            href="/bins/register"
-            className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-          >
-            Register New Bin
-          </Link>
-          <BackButton href="/dashboard" />
-        </div>
+    <div className="p-6">
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-gray-800">Bins</h1>
+        <BackButton href="/dashboard" />
       </div>
-      <div className="bg-white shadow-md rounded-lg overflow-hidden">
-        <table className="min-w-full">
-          <thead className="bg-gray-200">
+
+      <div className="overflow-x-auto">
+        <table className="min-w-full border border-gray-200 bg-white">
+          <thead className="bg-gray-50">
             <tr>
-              <th className="py-3 px-6 text-left">ID</th>
-              <th className="py-3 px-6 text-left">Name</th>
-              <th className="py-3 px-6 text-left">Location</th>
-              <th className="py-3 px-6 text-left">Last Update</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b">
+                ID
+              </th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b">
+                Name
+              </th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b">
+                Location
+              </th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b">
+                Status
+              </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody>
             {bins.map((bin) => (
-              <tr key={bin.id}>
-                <td className="py-4 px-6">
-                  <Link
-                    href={`/bins/${bin.id}`}
-                    className="text-blue-500 hover:underline"
-                  >
-                    {bin.id}
-                  </Link>
+              <tr key={bin.id} className="hover:bg-gray-50">
+                <td className="px-4 py-2 text-sm text-gray-800 border-b">
+                  {bin.id}
                 </td>
-                <td className="py-4 px-6">{bin.name}</td>
-                <td className="py-4 px-6">{bin.location}</td>
-                <td className="py-4 px-6">
-                  {bin.lastUpdate
-                    ? new Date(
-                        bin.lastUpdate._seconds * 1000
-                      ).toLocaleString()
-                    : "N/A"}
+                <td className="px-4 py-2 text-sm text-gray-800 border-b">
+                  {bin.name}
+                </td>
+                <td className="px-4 py-2 text-sm text-gray-800 border-b">
+                  {bin.location}
+                </td>
+                <td className="px-4 py-2 text-sm text-gray-800 border-b">
+                  {bin.status}
                 </td>
               </tr>
             ))}
+            {bins.length === 0 && (
+              <tr>
+                <td
+                  colSpan={4}
+                  className="px-4 py-4 text-sm text-gray-500 text-center"
+                >
+                  No bins found.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

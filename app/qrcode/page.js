@@ -3,7 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import axios from 'axios';
 import withAuth from '../components/withAuth';
-import BackButton from '../components/BackButton';
+import { BackButton } from '../components/BackButton';
+
+export const dynamic = 'force-dynamic';
 
 const QRCodePage = () => {
     const [binId, setBinId] = useState('');

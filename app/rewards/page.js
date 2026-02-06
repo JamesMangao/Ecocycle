@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import withAuth from '../components/withAuth';
-import BackButton from '../components/BackButton';
+import { BackButton } from '../components/BackButton';
+
+export const dynamic = 'force-dynamic';
 
 const API_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/rewards`;
 

@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import withAuth from '../components/withAuth';
-import BackButton from '../components/BackButton';
+import { BackButton } from '../components/BackButton';
+
+export const dynamic = 'force-dynamic';
 
 function UsersPage() {
   const [users, setUsers] = useState([]);
