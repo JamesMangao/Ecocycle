@@ -10,6 +10,7 @@ export const dynamic = 'force-dynamic';
 
 const DashboardPage = () => {
     const [auth, setAuth] = useState(null);
+    const [authLoaded, setAuthLoaded] = useState(false);
     const [stats, setStats] = useState({
         totalUsers: 0,
         totalTransactions: 0,
@@ -22,14 +23,20 @@ const DashboardPage = () => {
     const router = useRouter();
     const user = auth?.currentUser;
 
-    // Lazy load Firebase
+    // Lazy load Firebase - must complete before any Firebase operations
     useEffect(() => {
         import('../../firebase').then(({ auth: fbAuth }) => {
             setAuth(fbAuth);
+            setAuthLoaded(true);
+        }).catch((err) => {
+            console.error('Failed to load Firebase:', err);
+            setAuthLoaded(true); // Mark as loaded even on error
         });
     }, []);
 
      useEffect(() => {
+        if (!authLoaded) return; // Wait until Firebase is loaded
+        
         const fetchStats = async () => {
             try {
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/stats`);
@@ -49,10 +56,14 @@ const DashboardPage = () => {
             setShowWelcome(true);
             localStorage.setItem('isFirstLogin', 'false');
         }
-    }, []);
+    }, [authLoaded]);
 
-    const handleNavigation = (path) => {
-        router.push(path);
+    const handleLogout = () => {
+        if (auth && auth.signOut) {
+            auth.signOut().then(() => router.push('/login')).catch((err) => {
+                console.error('Logout failed:', err);
+            });
+        }
     };
 
     const handleClosePopup = () => {
@@ -73,8 +84,9 @@ const DashboardPage = () => {
             <header className="bg-white shadow-md p-4 flex justify-between items-center">
                 <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
                 <button
-                    onClick={() => auth?.signOut().then(() => router.push('/login'))}
-                    className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+                    onClick={handleLogout}
+                    disabled={!authLoaded}
+                    className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     Logout
                 </button>

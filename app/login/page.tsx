@@ -1,29 +1,43 @@
 "use client";
 
-import { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
 export default function LoginPage() {
   const [auth, setAuth] = useState(null);
+  const [authLoaded, setAuthLoaded] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   // Lazy load Firebase
-  useState(() => {
+  useEffect(() => {
     import('../../firebase').then(({ auth: fbAuth }) => {
       setAuth(fbAuth);
+      setAuthLoaded(true);
+    }).catch((err) => {
+      console.error('Failed to load Firebase:', err);
+      setAuthLoaded(true); // Mark as loaded even on error
     });
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!auth) {
+      setError('Firebase not loaded. Please try again.');
+      return;
+    }
+
     setError('');
+    setIsLoading(true);
+    
     try {
+      const { signInWithEmailAndPassword } = await import('firebase/auth');
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/dashboard');
     } catch (err) {
@@ -32,6 +46,8 @@ export default function LoginPage() {
       } else {
         setError('An unknown error occurred.');
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -77,9 +93,10 @@ export default function LoginPage() {
           <div>
             <button
               type="submit"
-              className="w-full px-4 py-2 font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              disabled={isLoading || !authLoaded}
+              className="w-full px-4 py-2 font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Sign in
+              {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
         </form>
