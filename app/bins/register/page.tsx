@@ -1,16 +1,17 @@
 "use client";
-import { useState } from "react";
+
+import { FormEvent, useState } from "react";
 import withAuth from "../../components/withAuth";
 import Link from "next/link";
-import { BackButton } from '../../components/BackButton';
+import { BackButton } from "../../components/BackButton";
 
 function RegisterBin() {
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setSuccess("");
@@ -38,7 +39,11 @@ function RegisterBin() {
       setName("");
       setLocation("");
     } catch (err) {
-      setError(err.message);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred");
+      }
     }
   };
 
@@ -48,16 +53,26 @@ function RegisterBin() {
         <div className="flex justify-between items-center mb-6">
           <BackButton href="/dashboard" />
           <h1 className="text-3xl font-bold text-gray-800">Register New Bin</h1>
-          <Link href="/bins" className="bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">
+          <Link
+            href="/bins"
+            className="bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors"
+          >
             View All Bins
           </Link>
         </div>
         <div className="bg-white p-8 rounded-xl shadow-lg">
           <form onSubmit={handleSubmit}>
-            {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
-            {success && <p className="text-green-500 mb-4 text-center">{success}</p>}
+            {error && (
+              <p className="text-red-500 mb-4 text-center">{error}</p>
+            )}
+            {success && (
+              <p className="text-green-500 mb-4 text-center">{success}</p>
+            )}
             <div className="mb-6">
-              <label htmlFor="name" className="block text-gray-700 font-bold mb-2">
+              <label
+                htmlFor="name"
+                className="block text-gray-700 font-bold mb-2"
+              >
                 Bin Name
               </label>
               <input
@@ -70,7 +85,10 @@ function RegisterBin() {
               />
             </div>
             <div className="mb-6">
-              <label htmlFor="location" className="block text-gray-700 font-bold mb-2">
+              <label
+                htmlFor="location"
+                className="block text-gray-700 font-bold mb-2"
+              >
                 Location
               </label>
               <input
