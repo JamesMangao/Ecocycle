@@ -8,6 +8,9 @@ const nextConfig = {
       },
     ]
   },
+  // Use standalone output instead of static export
+  // This allows for server-side rendering and dynamic pages
+  output: 'standalone',
 }
 
 module.exports = nextConfig

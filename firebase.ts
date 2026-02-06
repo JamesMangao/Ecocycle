@@ -13,16 +13,32 @@ const firebaseConfig = {
     databaseURL: "https://ecocycle-22125-default-rtdb.firebaseio.com",
 };
 
-let app: FirebaseApp;
+let app: FirebaseApp | undefined;
+let db: Firestore | undefined;
+let auth: Auth | undefined;
+let database: Database | undefined;
 
-if (getApps().length === 0) {
-    app = initializeApp(firebaseConfig);
-} else {
-    app = getApp();
+const initFirebase = () => {
+    try {
+        if (getApps().length === 0) {
+            app = initializeApp(firebaseConfig);
+        } else {
+            app = getApp();
+        }
+
+        db = getFirestore(app);
+        auth = getAuth(app);
+        database = getDatabase(app);
+    } catch (error) {
+        // Firebase initialization failed, likely during build
+        console.debug("Firebase initialization deferred:", error instanceof Error ? error.message : String(error));
+    }
+};
+
+// Initialize Firebase - will be deferred if config is incomplete
+if (typeof window !== "undefined") {
+    // Browser environment - safe to initialize
+    initFirebase();
 }
-
-const db: Firestore = getFirestore(app);
-const auth: Auth = getAuth(app);
-const database: Database = getDatabase(app);
 
 export { app, db, auth, database };
