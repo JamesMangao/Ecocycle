@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getFirestore, type Firestore } from "firebase/firestore";
-import { getAuth, type Auth } from "firebase/auth";
+import {  getAuth, type Auth } from "firebase/auth";
 import { getDatabase, type Database } from "firebase/database";
 
 const firebaseConfig = {
@@ -20,7 +20,6 @@ let auth: Auth | undefined;
 let database: Database | undefined;
 
 // Only initialize in browser environment
-// In Node.js/build environment, these will remain undefined
 if (typeof window !== "undefined") {
     try {
         if (getApps().length === 0) {
@@ -30,16 +29,24 @@ if (typeof window !== "undefined") {
         }
 
         if (app) {
-            db = getFirestore(app);
-            auth = getAuth(app);
-            database = getDatabase(app);
+            try {
+                db = getFirestore(app);
+            } catch (e) {
+                // Ignore errors from getFirestore
+            }
+            try {
+                auth = getAuth(app);
+            } catch (e) {
+                // Ignore errors from getAuth
+            }
+            try {
+                database = getDatabase(app);
+            } catch (e) {
+                // Ignore errors from getDatabase
+            }
         }
     } catch (error) {
         // Silently handle Firebase initialization errors
-        // This is expected during build time or when config is incomplete
-        if (typeof window !== "undefined") {
-            console.debug("Firebase initialization deferred or failed:", error instanceof Error ? error.message : String(error));
-        }
     }
 }
 
