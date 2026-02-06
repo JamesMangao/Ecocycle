@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import withAuth from "../components/withAuth";
-import BackButton from "../components/BackButton";
+import { BackButton } from "../components/BackButton";
 
 function BinsPage() {
   const [bins, setBins] = useState([]);
