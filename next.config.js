@@ -10,12 +10,6 @@ const nextConfig = {
   },
   // Use standalone output for server rendering
   output: 'standalone',
-  // Increase or disable the timeout for static generation to allow fallback to SSR
-  staticPageGenerationTimeout: 1000,
-  // Disable static optimization - this helps with dynamic pages
-  experimental: {
-    isrMemoryCacheSize: 0,
-  }
 }
 
 module.exports = nextConfig

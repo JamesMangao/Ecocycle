@@ -13,70 +13,33 @@ const firebaseConfig = {
     databaseURL: "https://ecocycle-22125-default-rtdb.firebaseio.com",
 };
 
-let _app: FirebaseApp | null = null;
-let _db: Firestore | null = null;
-let _auth: Auth | null = null;
-let _database: Database | null = null;
-let _initialized = false;
+let app: FirebaseApp | undefined;
+let db: Firestore | undefined;
+let auth: Auth | undefined;
+let database: Database | undefined;
 
-const ensureInitialized = () => {
-    // Skip if already initialized
-    if (_initialized) return;
-    _initialized = true;
-
-    // Only initialize in browser
-    if (typeof window === "undefined" || typeof document === "undefined") {
-        return;
-    }
-
+// Only initialize in browser environment
+// In Node.js/build environment, these will remain undefined
+if (typeof window !== "undefined") {
     try {
         if (getApps().length === 0) {
-            _app = initializeApp(firebaseConfig);
+            app = initializeApp(firebaseConfig);
         } else {
-            _app = getApp();
+            app = getApp();
         }
-        _db = getFirestore(_app);
-        _auth = getAuth(_app);
-        _database = getDatabase(_app);
+
+        if (app) {
+            db = getFirestore(app);
+            auth = getAuth(app);
+            database = getDatabase(app);
+        }
     } catch (error) {
-        console.error("Firebase initialization error:", error);
-        _initialized = false;
+        // Silently handle Firebase initialization errors
+        // This is expected during build time or when config is incomplete
+        if (typeof window !== "undefined") {
+            console.debug("Firebase initialization deferred or failed:", error instanceof Error ? error.message : String(error));
+        }
     }
-};
-
-// Export getters that initialize on first access
-export const getApp$firebase = (): FirebaseApp | null => {
-    ensureInitialized();
-    return _app;
-};
-
-export const getDb = (): Firestore | null => {
-    ensureInitialized();
-    return _db;
-};
-
-export const getAuth$firebase = (): Auth | null => {
-    ensureInitialized();
-    return _auth;
-};
-
-export const getDatabase$firebase = (): Database | null => {
-    ensureInitialized();
-    return _database;
-};
-
-// For backward compatibility, export proxy objects that trigger initialization
-let app: any;
-let db: any;
-let auth: any;
-let database: any;
-
-if (typeof window !== "undefined") {
-    ensureInitialized();
-    app = _app;
-    db = _db;
-    auth = _auth;
-    database = _database;
 }
 
 export { app, db, auth, database };
